@@ -70,3 +70,40 @@ export const suggestedUsers = catchAsync(async (req, res, next) => {
     data: users,
   });
 });
+
+const followUnfollow = catchAsync(async (req, res, next) => {
+    const loginUserId = req.user.id;
+    const targetUserId = req.params.id;
+    if(loginUserId.toString() === targetUserId){
+        return next(new AppError("You cannot follow or unfollow yourself", 400));
+    }
+
+    const targetUser = await User.findById(targetUserId);
+
+    if(!targetUser){
+        return next(new AppError("User not found", 404));
+    }
+
+    const isFollowing = targetUser.followers.includes(loginUserId); 
+
+    if(isFollowing){
+        await Promise.all([
+            User.updateOne({_id: loginUserId}, {$pull: {following: targetUserId}}),
+            User.updateOne({_id: targetUserId}, {$pull: {followers: loginUserId}})
+        ]);
+    }else{
+        await Promise.all([
+            User.updateOne({_id: loginUserId}, {$addToSet: {following: targetUserId}}),
+            User.updateOne({_id: targetUserId}, {$addToSet: {followers: loginUserId}})
+        ]);
+    }
+
+    const updatedLoggedInUser = await User.findById(loginUserId).select("-password");
+    res.status(200).json({
+        status: "success",
+        message: isFollowing ? "Unfollowed successfully" : "Followed successfully",
+        data:{
+            user: updatedLoggedInUser
+        }
+    });
+});

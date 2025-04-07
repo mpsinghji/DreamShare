@@ -10,7 +10,7 @@ import {
   changePassword,
 } from "../controllers/authController.js";
 import isAuthenticated from "../middleware/isAuthenticated.js";
-import { editProfile, getProfile } from "../controllers/userController.js";
+import { editProfile, followUnfollow, getProfile, suggestedUsers } from "../controllers/userController.js";
 import upload from "../middleware/multer.js";
 const router = express.Router();
 
@@ -29,4 +29,7 @@ router.post("/change-password", isAuthenticated, changePassword);
 router.get("/profile/:id", getProfile);
 router.patch("/profile", isAuthenticated, upload.single("profilePicture"), editProfile);
 router.get("/suggested-users", isAuthenticated, suggestedUsers);
+router.post("/follow-unfollow/:id", isAuthenticated, followUnfollow);
+
+
 export default router;
