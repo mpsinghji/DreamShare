@@ -14,12 +14,11 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [process.env.WEB_URL, process.env.LOCAL_URL],
     credentials: true,
   })
 );
 
-// Mount routes
 app.use("/api/v1/users", userRoutes);
 
 export default app;
