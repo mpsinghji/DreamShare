@@ -4,7 +4,6 @@ import User from "../models/userModel.js";
 import AppError from "../utils/appError.js";
 import sharp from "sharp";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
-import { getDataUri } from "../utils/dataUri.js";
 
 export const createPost = catchAsync(async (req, res, next) => {
   const { caption } = req.body;
@@ -49,7 +48,7 @@ export const createPost = catchAsync(async (req, res, next) => {
     select: "username profilePicture email bio",
   });
 
-  res.status(201).json({
+  return res.status(201).json({
     status: "success",
     message: "Post created successfully",
     data: post,
@@ -80,3 +79,26 @@ export const getPosts = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+export const getUserPosts = catchAsync(async (req, res, next) => {
+    const userId = req.params.userId;
+    const posts = await Post.find({user: userId})
+    .populate({
+        path: "comments",
+        select: "text user",
+        populate: {
+            path: "user",
+            select: "username profilePicture",
+        },
+    })
+    .sort({ createdAt: -1 });
+    
+    return res.status(200).json({
+        status: "success",
+        results: posts.length,
+        data: {
+            posts,
+        },
+  });
+});
+
