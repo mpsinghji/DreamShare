@@ -171,3 +171,29 @@ export const deletePost = catchAsync(async (req, res, next) => {
         message: "Post deleted successfully",
     });
 });
+
+export const likeOrDislikePost = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const post = await Post.findById(id);
+    if(!post){
+        return next(new AppError("Post not found", 404));
+    }
+    
+    const isliked= post.likes.includes(userId);
+
+    if(isliked){
+        await Post.findByIdAndUpdate(id,{$pull:{likes:userId}},{new:true});
+        return res.status(200).json({
+            status: "success",
+            message: "Post disliked",
+        });
+    }else{
+        await Post.findByIdAndUpdate(id,{$addToSet:{likes:userId}},{new:true});
+        return res.status(200).json({
+            status: "success",
+            message: "Post liked",
+        });
+    }
+});
