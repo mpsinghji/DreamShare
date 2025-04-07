@@ -100,6 +100,9 @@ userSchema.pre("save", async function(next){
     next();
 }); 
 
+userSchema.methods.correctPassword=async function(userPassword,databasePassword){
+    return await bcrypt.compare(userPassword,databasePassword);
+};
 
 const User=mongoose.model("User",userSchema);
 export default User;

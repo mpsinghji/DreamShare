@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config({ path: "./config/config.env" });
 
@@ -18,5 +19,7 @@ app.use(
   })
 );
 
+// Mount routes
+app.use("/api/v1/users", userRoutes);
 
 export default app;
