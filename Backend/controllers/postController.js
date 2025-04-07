@@ -81,24 +81,57 @@ export const getPosts = catchAsync(async (req, res, next) => {
 });
 
 export const getUserPosts = catchAsync(async (req, res, next) => {
-    const userId = req.params.userId;
-    const posts = await Post.find({user: userId})
+  const userId = req.params.userId;
+  const posts = await Post.find({ user: userId })
     .populate({
-        path: "comments",
-        select: "text user",
-        populate: {
-            path: "user",
-            select: "username profilePicture",
-        },
+      path: "comments",
+      select: "text user",
+      populate: {
+        path: "user",
+        select: "username profilePicture",
+      },
     })
     .sort({ createdAt: -1 });
-    
-    return res.status(200).json({
-        status: "success",
-        results: posts.length,
-        data: {
-            posts,
-        },
+
+  return res.status(200).json({
+    status: "success",
+    results: posts.length,
+    data: {
+      posts,
+    },
   });
 });
 
+export const saveOrUnsavePost = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const postId = req.params.postId;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  const isPostSave = user.savedPosts.includes(postId);
+
+  if (isPostSave) {
+    user.savedPosts.pull(postId);
+    await user.save({ validateBeforeSave: false });
+    return res.status(200).json({
+      status: "success",
+      message: "Post unsaved",
+      data: {
+        user,
+      },
+    });
+  } else {
+    user.savedPosts.push(postId);
+    await user.save({ validateBeforeSave: false });
+    return res.status(200).json({
+      status: "success",
+      message: "Post saved",
+      data: {
+        user,
+      },
+    });
+  }
+});
