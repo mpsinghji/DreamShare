@@ -71,7 +71,7 @@ export const suggestedUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-const followUnfollow = catchAsync(async (req, res, next) => {
+export const followUnfollow = catchAsync(async (req, res, next) => {
     const loginUserId = req.user.id;
     const targetUserId = req.params.id;
     if(loginUserId.toString() === targetUserId){
@@ -104,6 +104,21 @@ const followUnfollow = catchAsync(async (req, res, next) => {
         message: isFollowing ? "Unfollowed successfully" : "Followed successfully",
         data:{
             user: updatedLoggedInUser
+        }
+    });
+});
+
+export const getMe = catchAsync(async (req, res, next) => {
+    const user = req.user;
+    if(!user){
+        return next(new AppError("User not found", 404));
+    }
+
+    res.status(200).json({
+        status: "success",
+        message: "Authenticated user",
+        data: {
+            user
         }
     });
 });
