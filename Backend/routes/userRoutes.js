@@ -28,5 +28,5 @@ router.post("/change-password", isAuthenticated, changePassword);
 // User Routes
 router.get("/profile/:id", getProfile);
 router.patch("/profile", isAuthenticated, upload.single("profilePicture"), editProfile);
-
+router.get("/suggested-users", isAuthenticated, suggestedUsers);
 export default router;

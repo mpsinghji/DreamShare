@@ -36,23 +36,37 @@ export const editProfile = catchAsync(async (req, res, next) => {
   const ProfilePicture = req.file;
 
   let cloudResponse;
-  if(ProfilePicture){
+  if (ProfilePicture) {
     const fileUri = getDataUri(ProfilePicture);
     cloudResponse = await uploadToCloudinary(fileUri);
   }
 
   const user = await User.findById(userId).select("-password");
-  if(!user){
+  if (!user) {
     return next(new AppError("User not found", 404));
   }
 
-  if(bio) user.bio = bio;
-  if(ProfilePicture) user.profilePicture = cloudResponse?.url;
+  if (bio) user.bio = bio;
+  if (ProfilePicture) user.profilePicture = cloudResponse?.url;
   await user.save();
 
   res.status(200).json({
     message: "Profile updated successfully",
     status: "success",
     data: user,
+  });
+});
+
+export const suggestedUsers = catchAsync(async (req, res, next) => {
+  const loginUserId = req.user.id;
+  const users = await User.find({
+    _id: { $ne: loginUserId },
+  }).select(
+    "-password -otp -otpExpires -resetPasswordOtp -resetPasswordOTPExpires -passwordConfirm"
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: users,
   });
 });
