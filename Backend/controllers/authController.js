@@ -95,3 +95,24 @@ export const signup = catchAsync(async (req, res, next) => {
     );
   }
 });
+
+export const verifyAccount = catchAsync(async (req, res, next) => {
+  const { otp } = req.body;
+  if (!otp) {
+    return next(new AppError("Please enter the OTP", 400));
+  }
+  const user = req.user;
+
+  if (user.otp !== otp) {
+    return next(new AppError("Invalid OTP", 400));
+  }
+
+  if (Date.now() > user.otpExpires) {
+    return next(new AppError("OTP expired", 400));
+  }
+  user.isVerified = true;
+  user.otp = undefined;
+  user.otpExpires = undefined;
+  await user.save({ validateBeforeSave: false });
+  createSendToken(user, 200, res, "Account verified successfully");
+});
