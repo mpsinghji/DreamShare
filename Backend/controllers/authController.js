@@ -176,10 +176,58 @@ export const login = catchAsync(async (req, res, next) => {
 });
 
 export const logout = catchAsync(async (req, res, next) => {
-    res.cookie("token","loggedOut",{
-        expires:new Date(Date.now()+10*1000),
-        httpOnly:true,
-        secure:process.env.NODE_ENV==="production",
+  res.cookie("token", "loggedOut", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  });
+  res
+    .status(200)
+    .json({ status: "success", message: "Logged out successfully" });
+});
+
+export const forgotPassword = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) {
+    return next(new AppError("Please provide email", 400));
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+  const otp = generateOTP();
+  const resetExpires = Date.now() + 300000;
+
+  user.resetPasswordOTP = otp;
+  user.resetPasswordOTPExpires = resetExpires;
+
+  await user.save({ validateBeforeSave: false });
+
+  const htmlTemplate = loadTemplate("OtpTemplate.html", {
+    title: "Password Reset OTP",
+    username: user.username,
+    otp: otp,
+    message: "Please reset your password by entering the OTP below.",
+  });
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Password Reset OTP (Valid for 5 minutes)",
+      html: htmlTemplate,
     });
-    res.status(200).json({status:"success",message:"Logged out successfully"});
+    res.status(200).json({
+      status: "success",
+      message: "A Password Reset OTP has been sent to your email",
+    });
+  } catch (error) {
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordOTPExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(
+      new AppError(
+        "There is an error sending the Email.Please try again later",
+        500
+      )
+    );
+  }
 });
