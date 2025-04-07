@@ -231,3 +231,22 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
+
+export const resetPassword = catchAsync(async (req, res, next) => {
+  const { email, otp, password, passwordConfirm } = req.body;
+  const user = await User.findOne({
+    email,
+    resetPasswordOTP: otp,
+    resetPasswordOTPExpires: { $gt: Date.now() },
+  });
+  if (!user) {
+    return next(new AppError("No user found", 400));
+  }
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  user.resetPasswordOTP = undefined;
+  user.resetPasswordOTPExpires = undefined;
+
+  await user.save();
+  createSendToken(user, 200, res, "Password reset successfully");
+});
