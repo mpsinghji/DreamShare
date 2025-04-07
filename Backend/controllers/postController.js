@@ -3,7 +3,8 @@ import Post from "../models/postModel.js";
 import User from "../models/userModel.js";
 import AppError from "../utils/appError.js";
 import sharp from "sharp";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+import uploadToCloudinary from "../utils/cloudinary.js";
+import Comment from "../models/commentModel.js";
 
 export const createPost = catchAsync(async (req, res, next) => {
   const { caption } = req.body;
