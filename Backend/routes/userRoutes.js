@@ -10,8 +10,8 @@ import {
   changePassword,
 } from "../controllers/authController.js";
 import isAuthenticated from "../middleware/isAuthenticated.js";
-import { getProfile } from "../controllers/userController.js";
-
+import { editProfile, getProfile } from "../controllers/userController.js";
+import upload from "../middleware/multer.js";
 const router = express.Router();
 
 
@@ -27,5 +27,6 @@ router.post("/change-password", isAuthenticated, changePassword);
 
 // User Routes
 router.get("/profile/:id", getProfile);
+router.patch("/profile", isAuthenticated, upload.single("profilePicture"), editProfile);
 
 export default router;
