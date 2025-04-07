@@ -135,3 +135,39 @@ export const saveOrUnsavePost = catchAsync(async (req, res, next) => {
     });
   }
 });
+
+export const deletePost = catchAsync(async (req, res, next) => {
+    const id = req.params.id;
+    const userId = req.user.id;
+
+    const post = await Post.findById(id).populate("user");
+    if(!post){
+        return next(new AppError("Post not found", 404));
+    }
+
+    if(post.user._id.toString() !== userId.toString()){
+        return next(new AppError("You are not allowed to delete this post", 403));
+    }
+    
+    //remove the post from the user's posts
+    await User.updateMany({_id:userId},{$pull:{posts:id}});
+
+    //remove the posts from users saved list
+    await User.updateMany({savedPosts:id},{$pull:{savedPosts:id}});
+
+    //removed the comments from the post
+    await Comment.deleteMany({post:id});
+
+    // remove image from cloudinary
+    if(post.image.public_id){
+        await cloudinary.uploader.destroy(post.image.public_id);
+    }
+
+    //remove the post
+    await Post.findByIdAndDelete(id);
+
+    return res.status(200).json({
+        status: "success",
+        message: "Post deleted successfully",
+    });
+});
