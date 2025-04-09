@@ -1,7 +1,11 @@
+// "use client";
+
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import store from "@/store/store";
+import Providers from "./providers";
 const font = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
   subsets: ["latin"],
@@ -24,8 +28,10 @@ export default function RootLayout({
         className={`${font.className} antialiased`}
         suppressHydrationWarning
       >
-        {children}
-        <Toaster />
+        <Providers >
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

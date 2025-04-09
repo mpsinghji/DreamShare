@@ -1,13 +1,59 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { Mail, Lock } from "lucide-react";
 import LoadingButton from "../Helper/LoadingButton";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { BASE_API_URL } from "@/server";
+import { handleAuthRequest } from "../utils/apiRequest";
+import { setAuthUser } from "@/store/authSlice";
+import { toast } from "sonner";
+interface FormData {
+  email: string;
+  password: string;
+}
 
 const Login = () => {
+  const dispatch = useDispatch();
+  
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
+  });
+  
+  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    const loginReq = async () => {
+      return await axios.post(`${BASE_API_URL}/users/login`, formData, {
+        withCredentials: true,
+      });
+    }
+       
+      const result = await handleAuthRequest(loginReq, setIsLoading);
+
+      if (result) {
+        dispatch(setAuthUser(result.data.data.user));
+        toast.success(result.data.message);
+        router.push("/");
+      
+      }
+    }
+    
+
+  
+
 
   return (
     <>
@@ -46,7 +92,7 @@ const Login = () => {
               <h2 className="text-[32px] font-bold text-[#1f2937]">Log in</h2>
             </div>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-5">
                 <div>
                   <label
@@ -66,6 +112,8 @@ const Login = () => {
                       required
                       className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Email address"
+                      value={formData.email}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -88,6 +136,8 @@ const Login = () => {
                       required
                       className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Password"
+                      value={formData.password}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -99,6 +149,7 @@ const Login = () => {
                       name="remember"
                       type="checkbox"
                       className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    
                     />
                     <label
                       htmlFor="remember"
@@ -120,6 +171,7 @@ const Login = () => {
                 isLoading={isLoading}
                 className="w-full bg-[#3b82f6] text-white py-3 px-4 rounded-md text-base font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 type="submit"
+                // onClick={handleSubmit}
               >
                 Log in
               </LoadingButton>
