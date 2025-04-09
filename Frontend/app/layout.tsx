@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-
+import { Toaster } from "sonner";
 const font = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
   subsets: ["latin"],
@@ -25,6 +25,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );
