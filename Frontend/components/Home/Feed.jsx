@@ -1,94 +1,103 @@
 "use client";
-
-import React from "react";
-import { FaHeart, FaComment, FaShare } from "react-icons/fa";
+import React, { useState } from "react";
+import { Image, MessageCircle, Heart, Share2, MoreHorizontal } from "lucide-react";
 
 const Feed = () => {
-  const posts = [
+  const [posts, setPosts] = useState([
     {
       id: 1,
-      user: "Mannan ",
-      avatar: "https://avatar.iran.liara.run/public/17",
-      time: "2 hours ago",
-      content: "What an absolute GOAT of the game",
-      image:
-        "https://cdn.britannica.com/48/252748-050-C514EFDB/Virat-Kohli-India-celebrates-50th-century-Cricket-November-15-2023.jpg",
+      username: "Mannan ",
+      userImage: "https://avatar.iran.liara.run/public/17",
+      content: "https://avatar.iran.liara.run/public/17",
+      image: "https://cdn.britannica.com/48/252748-050-C514EFDB/Virat-Kohli-India-celebrates-50th-century-Cricket-November-15-2023.jpg",
+      likes: 42,
+      comments: 8,
+      timeAgo: "2h",
     },
     {
       id: 2,
-      user: "Diya",
-      avatar: "https://avatar.iran.liara.run/public/65",
-      time: "1 hour ago",
+      username: "Diya",
+      userImage: "https://avatar.iran.liara.run/public/65",
       content: "Check out this amazing sunset!",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1400/1*tMKkGydXuiOBOb15srANvg@2x.jpeg",
+      image: "https://miro.medium.com/v2/resize:fit:1400/1*tMKkGydXuiOBOb15srANvg@2x.jpeg",
+      likes: 128,
+      comments: 15,
+      timeAgo: "4h",
     },
-  ];
+  ]);
 
   return (
-    <div style={{ padding: "1rem", width: "100%", maxWidth: "600px" }}>
-      {posts.map((post) => (
-        <div
-          key={post.id}
-          style={{
-            background: "#f9f9f9",
-            borderRadius: "15px",
-            marginBottom: "1.5rem",
-            padding: "1rem",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-          }}
-        >
+    <div className="space-y-4">
+      {/* Create Post */}
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="flex items-center space-x-4">
+          <img
+            src="https://avatar.iran.liara.run/public/10"
+            alt="Profile"
+            className="w-10 h-10 rounded-full"
+          />
+          <input
+            type="text"
+            placeholder="What's on your mind?"
+            className="flex-1 bg-gray-100 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="flex justify-between mt-4">
+          <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
+            <Image className="h-5 w-5" />
+            <span>Photo</span>
+          </button>
+          <button className="bg-blue-600 text-white rounded-full px-4 py-1 hover:bg-blue-700">
+            Post
+          </button>
+        </div>
+      </div>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "10px",
-            }}
-          >
-            <img
-              src={post.avatar}
-              alt={post.user}
-              style={{
-                borderRadius: "50%",
-                width: "40px",
-                height: "40px",
-                marginRight: "10px",
-              }}
-            />
-            <div>
-              <strong>{post.user}</strong>
-              <p style={{ fontSize: "12px", margin: 0, color: "#666" }}>
-                {post.time}
-              </p>
+      {/* Posts */}
+      {posts.map((post) => (
+        <div key={post.id} className="bg-white rounded-lg shadow-sm p-4">
+          {/* Post Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <img
+                src={post.userImage}
+                alt={post.username}
+                className="w-10 h-10 rounded-full"
+              />
+              <div>
+                <h3 className="font-semibold">{post.username}</h3>
+                <p className="text-sm text-gray-500">{post.timeAgo}</p>
+              </div>
             </div>
+            <button className="text-gray-500 hover:text-gray-700">
+              <MoreHorizontal className="h-5 w-5" />
+            </button>
           </div>
 
-
-              <p style={{ marginBottom: "10px" }}>{post.content}</p>
+          {/* Post Content */}
+          <p className="mt-4">{post.content}</p>
           {post.image && (
             <img
               src={post.image}
-              alt="post"
-              style={{
-                width: "100%",
-                borderRadius: "10px",
-                marginBottom: "10px",
-              }}
+              alt="Post"
+              className="mt-4 rounded-lg w-full"
             />
           )}
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              marginTop: "10px",
-              color: "#555",
-            }}
-          >
-            <FaHeart style={{ cursor: "pointer" }} />
-            <FaComment style={{ cursor: "pointer" }} />
-            <FaShare style={{ cursor: "pointer" }} />
+          {/* Post Actions */}
+          <div className="flex justify-between mt-4 pt-4 border-t">
+            <button className="flex items-center space-x-2 text-gray-600 hover:text-red-600">
+              <Heart className="h-5 w-5" />
+              <span>{post.likes}</span>
+            </button>
+            <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
+              <MessageCircle className="h-5 w-5" />
+              <span>{post.comments}</span>
+            </button>
+            <button className="flex items-center space-x-2 text-gray-600 hover:text-green-600">
+              <Share2 className="h-5 w-5" />
+              <span>Share</span>
+            </button>
           </div>
         </div>
       ))}

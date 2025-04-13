@@ -1,105 +1,64 @@
 "use client";
-
-import React, { useState, useRef, useEffect } from "react";
-import { FaSearch } from "react-icons/fa";
-import { FaGripLines } from "react-icons/fa6";
-import { RxCrossCircled } from "react-icons/rx";
+import React from "react";
+import Link from "next/link";
+import { Home, Search, Bell, Mail, Bookmark, User, Settings, LogOut } from "lucide-react";
 
 const Left = () => {
-  const [toggle, setToggle] = useState(false);
-  const boxRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (boxRef.current && !boxRef.current.contains(e.target)) {
-        setToggle(false);
-      }
-    };
-
-    if (toggle) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [toggle]);
-
   return (
-    <div style={{}}>
-      {toggle ? (
-        <div
-          ref={boxRef}
-          style={{
-            background: "lightgrey",
-            height: "100%",
-            padding: "1pc",
-            borderRadius: "20px",
-            transition: "all 0.4s ease",
-            opacity: toggle ? 1 : 0,
-            transform: toggle ? "translateY(0px)" : "translateY(-20px)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <FaSearch />
-            <input
-              type="text"
-              placeholder="Search..."
-              style={{
-                background: "white",
-                borderRadius: "10px",
-                border: "none",
-                padding: "6px 10px",
-                outline: "none",
-              }}
-            />
-            <button
-              onClick={() => setToggle(false)}
-              style={{
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                position: "absolute",
-                top: "1px",
-                right: "1px",
-                padding: "12px",
-                fontSize:'32px'
-              }}
-            >
-              <RxCrossCircled />
-            </button>
-          </div>
-          <div style={{ padding: "2pc", textAlign: "center" }}>
-            <h2 style={{ padding: "2pc" }}>Yaha search results ayenge </h2>
-            
-          </div>
-        </div>
-      ) : (
-        <div>
-          <FaGripLines
-            onClick={() => setToggle(true)}
-            style={{ fontSize: "24px", cursor: "pointer" }}
-          />
+    <div className="bg-white rounded-lg shadow-sm p-4 sticky top-0 h-screen">
+      <div className="flex flex-col space-y-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center space-x-2 mb-6">
+          <span className="text-2xl font-bold text-blue-600">SocialSync</span>
+        </Link>
 
-          <div style={{ fontSize: "19px", marginTop: "4pc" }}>
-            <h2>Suggestions</h2>
-            <p>user1</p>
-            <p>user2</p>
-            <p>user3</p>
-            <p>user4</p>
-            <p>user6</p>
-            <p>user6</p>
-            <p>user6</p>
-            <p>user6</p>
-          </div>
-        </div>
-      )}
+        {/* Navigation Links */}
+        <Link href="/home" className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100">
+          <Home className="h-6 w-6" />
+          <span className="text-lg">Home</span>
+        </Link>
+
+        <Link href="/explore" className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100">
+          <Search className="h-6 w-6" />
+          <span className="text-lg">Explore</span>
+        </Link>
+
+        <Link href="/notifications" className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100">
+          <Bell className="h-6 w-6" />
+          <span className="text-lg">Notifications</span>
+        </Link>
+
+        <Link href="/messages" className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100">
+          <Mail className="h-6 w-6" />
+          <span className="text-lg">Messages</span>
+        </Link>
+
+        <Link href="/bookmarks" className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100">
+          <Bookmark className="h-6 w-6" />
+          <span className="text-lg">Bookmarks</span>
+        </Link>
+
+        <Link href="/profile" className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100">
+          <User className="h-6 w-6" />
+          <span className="text-lg">Profile</span>
+        </Link>
+
+        <Link href="/settings" className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100">
+          <Settings className="h-6 w-6" />
+          <span className="text-lg">Settings</span>
+        </Link>
+
+        {/* Post Button */}
+        <button className="bg-blue-600 text-white rounded-full py-2 px-4 font-semibold hover:bg-blue-700 transition-colors">
+          Post
+        </button>
+
+        {/* Logout Button */}
+        <button className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100 text-red-600">
+          <LogOut className="h-6 w-6" />
+          <span className="text-lg">Logout</span>
+        </button>
+      </div>
     </div>
   );
 };

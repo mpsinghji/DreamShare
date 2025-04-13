@@ -1,99 +1,124 @@
 "use client";
-
-import React,{useState} from "react";
-
-import { FaPlus } from "react-icons/fa";
-import Post from "../../app/Post.jsx"; 
+import React from "react";
+import { Search, TrendingUp, Users, Hash } from "lucide-react";
 
 const Right = () => {
   const suggestions = [
-    { name: "Alex Carter", avatar: "https://i.pravatar.cc/30?img=3" },
-    { name: "Maya Lopez", avatar: "https://i.pravatar.cc/30?img=4" },
-    { name: "Ravi Kumar", avatar: "https://i.pravatar.cc/30?img=5" },
-    ];
-      const [showModal, setShowModal] = useState(false);
+    {
+      id: 1,
+      username: "alex_tech",
+      name: "Alex Johnson",
+      avatar: "https://avatar.iran.liara.run/public",
+    },
+    {
+      id: 2,
+      username: "sarah_design",
+      name: "Sarah Williams",
+      avatar: "https://avatar.iran.liara.run/public/1",
+    },
+    {
+      id: 3,
+      username: "mike_dev",
+      name: "Mike Chen",
+      avatar: "https://avatar.iran.liara.run/public/2",
+    },
+  ];
+
+  const trends = [
+    {
+      id: 1,
+      hashtag: "#WebDevelopment",
+      posts: "125K posts",
+    },
+    {
+      id: 2,
+      hashtag: "#ReactJS",
+      posts: "98K posts",
+    },
+    {
+      id: 3,
+      hashtag: "#TypeScript",
+      posts: "75K posts",
+    },
+  ];
 
   return (
-    <div
-      style={{
-        width: "290px",
-        padding: "1rem",
-        background: "#f5f5f5",
-        borderRadius: "15px",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-      }}
-    >
-      <h3 style={{ marginBottom: "1rem" }}>People You May Know</h3>
-      {suggestions.map((user, idx) => (
-        <div
-          key={idx}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "1rem",
-            gap: "10px",
-          }}
-        >
-          <img
-            src={user.avatar}
-            alt={user.name}
-            style={{ borderRadius: "50%", width: "30px", height: "30px" }}
+    <div className="space-y-6">
+      {/* Search Bar */}
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search SocialSync"
+            className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <span style={{ flex: 1 }}>{user.name}</span>
-          <button
-            style={{
-              padding: "4px 8px",
-              fontSize: "12px",
-              borderRadius: "5px",
-              border: "none",
-              background: "#007bff",
-              color: "#fff",
-              cursor: "pointer",
-            }}
-          >
-            Add
-          </button>
         </div>
-      ))}
+      </div>
 
-      <h3 style={{ marginTop: "2rem", marginBottom: "1rem" }}>Trending</h3>
-      <ul style={{ paddingLeft: "15px", color: "#555" }}>
-        <li>#ReactJS</li>
-        <li>#DevLife</li>
-        <li>#AI2025</li>
-      </ul>
-      <div
-        style={{
-          width: "250px",
-          padding: "1rem",
-          background: "#f5f5f5",
-          borderRadius: "15px",
-          textAlign: "center",
-        }}
-      >
-        <h3>Create a Post</h3>
-        <button
-          onClick={() => setShowModal(true)}
-          style={{
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            padding: "10px 20px",
-            borderRadius: "10px",
-            cursor: "pointer",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            margin: "auto",
-          }}
-        >
-          <FaPlus /> New Post
-        </button>
+      {/* Who to Follow */}
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <h2 className="text-lg font-semibold mb-4 flex items-center">
+          <Users className="h-5 w-5 mr-2" />
+          Who to follow
+        </h2>
+        <div className="space-y-4">
+          {suggestions.map((user) => (
+            <div key={user.id} className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <img
+                  src={user.avatar}
+                  alt={user.username}
+                  className="w-10 h-10 rounded-full"
+                />
+                <div>
+                  <h3 className="font-semibold">{user.name}</h3>
+                  <p className="text-sm text-gray-500">@{user.username}</p>
+                </div>
+              </div>
+              <button className="bg-black text-white rounded-full px-4 py-1 text-sm hover:bg-gray-800">
+                Follow
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
 
-        {showModal && (
-          <Post closeModal={() => setShowModal(false)} />
-        )}
+      {/* Trends */}
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <h2 className="text-lg font-semibold mb-4 flex items-center">
+          <TrendingUp className="h-5 w-5 mr-2" />
+          Trends for you
+        </h2>
+        <div className="space-y-4">
+          {trends.map((trend) => (
+            <div key={trend.id} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Hash className="h-5 w-5 text-gray-400" />
+                <div>
+                  <h3 className="font-semibold">{trend.hashtag}</h3>
+                  <p className="text-sm text-gray-500">{trend.posts}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer Links */}
+      <div className="text-sm text-gray-500 space-y-2">
+        <div className="flex flex-wrap gap-2">
+          <a href="#" className="hover:underline">
+            Terms of Service
+          </a>
+          <a href="#" className="hover:underline">
+            Privacy Policy
+          </a>
+          <a href="#" className="hover:underline">
+            Cookie Policy
+          </a>
+        </div>
+        <p>© 2024 SocialSync</p>
       </div>
     </div>
   );
