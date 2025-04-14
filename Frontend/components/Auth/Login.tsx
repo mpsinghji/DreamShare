@@ -12,6 +12,7 @@ import { BASE_API_URL } from "@/server";
 import { handleAuthRequest } from "../utils/apiRequest";
 import { setAuthUser } from "@/store/authSlice";
 import { toast } from "sonner";
+import Link from "next/link";
 interface FormData {
   email: string;
   password: string;
@@ -19,14 +20,14 @@ interface FormData {
 
 const Login = () => {
   const dispatch = useDispatch();
-  
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
-  
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -34,26 +35,21 @@ const Login = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     const loginReq = async () => {
       return await axios.post(`${BASE_API_URL}/users/login`, formData, {
         withCredentials: true,
       });
+    };
+
+    const result = await handleAuthRequest(loginReq, setIsLoading);
+
+    if (result) {
+      dispatch(setAuthUser(result.data.data.user));
+      toast.success(result.data.message);
+      router.push("/");
     }
-       
-      const result = await handleAuthRequest(loginReq, setIsLoading);
-
-      if (result) {
-        dispatch(setAuthUser(result.data.data.user));
-        toast.success(result.data.message);
-        router.push("/");
-      
-      }
-    }
-    
-
-  
-
+  };
 
   return (
     <>
@@ -143,27 +139,12 @@ const Login = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <input
-                      id="remember"
-                      name="remember"
-                      type="checkbox"
-                      className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    
-                    />
-                    <label
-                      htmlFor="remember"
-                      className="ml-2 text-sm text-[#374151]"
-                    >
-                      Remember me
-                    </label>
-                  </div>
-                  <a
-                    href="#"
+                  <Link
+                    href="/auth/forget-password"
                     className="text-sm text-blue-600 hover:text-blue-500"
                   >
-                    Forgot password?
-                  </a>
+                    Forget password?
+                  </Link>
                 </div>
               </div>
 
