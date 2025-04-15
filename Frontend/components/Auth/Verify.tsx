@@ -1,9 +1,11 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { MailCheck, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import LoadingButton from "../Helper/LoadingButton";
 
 const Verify = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Focus first input on mount
@@ -13,14 +15,17 @@ const Verify = () => {
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return; // Prevent multiple characters
-    
+
     // Move to next input if value entered
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === "Backspace" && !e.currentTarget.value && index > 0) {
       // Move to previous input on backspace if current is empty
       inputRefs.current[index - 1]?.focus();
@@ -31,10 +36,11 @@ const Verify = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full p-8 bg-white rounded-xl shadow-sm">
         {/* Back Button */}
-        <Link href={"/auth/login"}><button className="flex items-center text-gray-600 hover:text-gray-800 mb-6">
-          <ArrowLeft className="h-5 w-5 mr-2" />
-          Back
-        </button>
+        <Link href={"/auth/login"}>
+          <button className="flex items-center text-gray-600 hover:text-gray-800 mb-6">
+            <ArrowLeft className="h-5 w-5 mr-2" />
+            Back
+          </button>
         </Link>
 
         {/* Verification Icon */}
@@ -69,12 +75,14 @@ const Verify = () => {
           </div>
 
           {/* Submit Button */}
-          <button
+          {}
+          <LoadingButton
+            isLoading={isLoading}
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Verify OTP
-          </button>
+          </LoadingButton>
 
           {/* Resend OTP Link */}
           <div className="text-center">
