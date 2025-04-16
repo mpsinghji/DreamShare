@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import Left from "../Pages/Home/Left";
-import Notification from "./Notification";
+import Left from "../Home/Left";
+import Settings from "./Settings";
 
 const Layout = () => {
   return (
@@ -13,9 +13,9 @@ const Layout = () => {
             <Left />
           </div>
 
-          {/* Main Feed */}
+          {/* Main Content */}
           <div className="col-span-12 md:col-span-10 lg:col-span-10">
-            <Notification/>
+            <Settings />
           </div>
         </div>
       </div>
@@ -23,4 +23,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default Layout; 
