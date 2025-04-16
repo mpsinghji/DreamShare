@@ -56,7 +56,7 @@ const Profile = () => {
       <div className="relative -mt-16 px-6">
         <div className="flex items-center space-x-4">
           <img
-            src={user.profileImage || "https://via.placeholder.com/150"}
+            src={user.profilePicture || "https://via.placeholder.com/150"}
             alt={user.name}
             className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
           />
@@ -109,7 +109,7 @@ const Profile = () => {
               >
                 <div className="flex items-center mb-4">
                   <img
-                    src={user.profileImage || "https://via.placeholder.com/150"}
+                    src={user.profilePicture || "https://via.placeholder.com/150"}
                     alt="avatar"
                     className="w-10 h-10 rounded-full mr-3"
                   />

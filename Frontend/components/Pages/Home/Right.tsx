@@ -67,7 +67,7 @@ const Right: React.FC = () => {
     try {
       setIsLoading(true);
       await axios.post(
-        `${BASE_API_URL}/users/follow/${userId}`,
+        `${BASE_API_URL}/users/follow-unfollow/${userId}`,
         {},
         { withCredentials: true }
       );

@@ -1,5 +1,8 @@
 import catchAsync from "../utils/catchAsync.js";
 import User from "../models/userModel.js";
+import AppError from "../utils/appError.js";
+import getDataUri from "../utils/dataUri.js";
+import uploadToCloudinary from "../utils/cloudinary.js";
 
 export const getProfile = catchAsync(async (req, res, next) => {
   const { id, username } = req.params;
@@ -8,7 +11,7 @@ export const getProfile = catchAsync(async (req, res, next) => {
   const query = id ? { _id: id } : { username };
 
   const user = await User.findOne(query)
-    .select("-password -passwordConfirm -otp -otpExpiry -resetPasswordOTP -resetPasswordOTPExpires")
+    .select("username name email profilePicture bio followers following posts")
     .populate({
       path: "posts",
       select: "content image likes comments createdAt",
@@ -36,24 +39,29 @@ export const getProfile = catchAsync(async (req, res, next) => {
 });
 
 export const editProfile = catchAsync(async (req, res, next) => {
-  const { userId } = req.user;
+  const userId = req.user.id;
   const { bio } = req.body;
   const ProfilePicture = req.file;
+
+  // Trim bio to 150 characters if it exists
+  const trimmedBio = bio ? bio.substring(0, 150) : undefined;
 
   let cloudResponse;
   if (ProfilePicture) {
     const fileUri = getDataUri(ProfilePicture);
-    cloudResponse = await uploadToCloudinary(fileUri);
+    cloudResponse = await uploadToCloudinary(fileUri.content);
   }
 
-  const user = await User.findById(userId).select("-password");
+  const user = await User.findById(userId).select("-password -passwordConfirm");
   if (!user) {
     return next(new AppError("User not found", 404));
   }
 
-  if (bio) user.bio = bio;
+  if (trimmedBio !== undefined) user.bio = trimmedBio;
   if (ProfilePicture) user.profilePicture = cloudResponse?.url;
-  await user.save();
+  
+  // Save without validation for passwordConfirm
+  await user.save({ validateBeforeSave: false });
 
   res.status(200).json({
     message: "Profile updated successfully",
