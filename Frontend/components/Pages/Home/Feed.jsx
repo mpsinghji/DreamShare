@@ -8,7 +8,7 @@ const Feed = () => {
       id: 1,
       username: "Mannan ",
       userImage: "https://avatar.iran.liara.run/public/17",
-      content: "",
+      content: "Aboslute Goat of the game,What a knock🔥 ",
       image: "https://cdn.britannica.com/48/252748-050-C514EFDB/Virat-Kohli-India-celebrates-50th-century-Cricket-November-15-2023.jpg",
       likes: 42,
       comments: 8,

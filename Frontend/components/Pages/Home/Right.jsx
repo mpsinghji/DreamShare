@@ -27,17 +27,17 @@ const Right = () => {
   const trends = [
     {
       id: 1,
-      hashtag: "#WebDevelopment",
+      hashtag: "#IPL",
       posts: "125K posts",
     },
     {
       id: 2,
-      hashtag: "#ReactJS",
+      hashtag: "#Election",
       posts: "98K posts",
     },
     {
       id: 3,
-      hashtag: "#TypeScript",
+      hashtag: "#Jobs",
       posts: "75K posts",
     },
   ];

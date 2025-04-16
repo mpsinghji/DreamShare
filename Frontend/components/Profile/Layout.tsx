@@ -1,10 +1,9 @@
 "use client";
 import React from "react";
-import Left from "./Left";
-import Feed from "./Feed";
-import Right from "./Right";
+import Left from "../Pages/Home/Left";
+import Profile from "./Profile";
 
-const Home = () => {
+const Layout = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,13 +14,8 @@ const Home = () => {
           </div>
 
           {/* Main Feed */}
-          <div className="col-span-12 md:col-span-6 lg:col-span-7">
-            <Feed />
-          </div>
-
-          {/* Right Sidebar - Suggestions/Trends */}
-          <div className="col-span-12 md:col-span-3 lg:col-span-3">
-            <Right />
+          <div className="col-span-12 md:col-span-10 lg:col-span-10">
+            <Profile />
           </div>
         </div>
       </div>
@@ -29,4 +23,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Layout;
