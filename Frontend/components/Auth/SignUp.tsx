@@ -61,14 +61,22 @@ const SignUp = () => {
       });
     };
     
-    const result = await handleAuthRequest<ApiResponse>(signupReq, setIsLoading);
-    if(result){
-      console.log("Signup successful:", result.data.data.user);
-      toast.success(result.data.message);
-      
-      // TODO:
-      // Redirect to home page
-      // Add user to redux store
+    try {
+      const result = await handleAuthRequest<ApiResponse>(signupReq, setIsLoading);
+      if(result){
+        console.log("Signup successful:", result.data.data.user);
+        toast.success(result.data.message);
+        
+        // TODO:
+        // Redirect to home page
+        // Add user to redux store
+      }
+    } catch (error: any) {
+      if (error.response?.data?.message === "User already exists") {
+        toast.error("Email already registered. Please use a different email or login.");
+      } else {
+        toast.error(error.response?.data?.message || "An unexpected error occurred");
+      }
     }
   };
 

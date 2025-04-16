@@ -2,8 +2,19 @@
 import React, { useState } from "react";
 import { Image, MessageCircle, Heart, Share2, MoreHorizontal } from "lucide-react";
 
-const Feed = () => {
-  const [posts, setPosts] = useState([
+interface Post {
+  id: number;
+  username: string;
+  userImage: string;
+  content: string;
+  image?: string;
+  likes: number;
+  comments: number;
+  timeAgo: string;
+}
+
+const Feed: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>([
     {
       id: 1,
       username: "Mannan ",
@@ -105,4 +116,4 @@ const Feed = () => {
   );
 };
 
-export default Feed;
+export default Feed; 

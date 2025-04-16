@@ -9,17 +9,23 @@ import { BASE_API_URL } from "@/server";
 import { handleAuthRequest } from "../../utils/apiRequest";
 import { setAuthUser } from "@/store/authSlice";
 import { toast } from "sonner";
+import { RootState } from "@/store/store";
 
-const Left = () => {
+interface ApiResponse {
+  status: string;
+  message: string;
+}
+
+const Left: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const user = useSelector((store) => store.auth.user);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState<boolean>(false);
+  const user = useSelector((store: RootState) => store.auth.user);
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     const logoutReq = async () => {
-      return await axios.post(`${BASE_API_URL}/users/logout`, {}, {
+      return await axios.post<ApiResponse>(`${BASE_API_URL}/users/logout`, {}, {
         withCredentials: true,
       });
     };
@@ -142,4 +148,4 @@ const Left = () => {
   );
 };
 
-export default Left;
+export default Left; 
