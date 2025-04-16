@@ -3,6 +3,12 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 
 const userSchema=new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, "Please add your name"],
+        trim: true,
+        maxlength: [50, "Name cannot be more than 50 characters"],
+    },
     username: {
         type:String,
         requied: [true,"Please add username"],

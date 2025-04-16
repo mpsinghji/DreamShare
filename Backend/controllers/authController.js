@@ -54,7 +54,7 @@ export const createSendToken = (user, statusCode, res, message) => {
 };
 
 export const signup = catchAsync(async (req, res, next) => {
-  const { username, email, password, passwordConfirm } = req.body;
+  const { name, username, email, password, passwordConfirm } = req.body;
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
@@ -63,6 +63,7 @@ export const signup = catchAsync(async (req, res, next) => {
   const otp = generateOTP();
   const otpExpires = Date.now() + 10 * 60 * 1000;
   const newUser = await User.create({
+    name,
     username,
     email,
     password,
