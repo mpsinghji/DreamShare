@@ -2,22 +2,25 @@ import catchAsync from "../utils/catchAsync.js";
 import User from "../models/userModel.js";
 
 export const getProfile = catchAsync(async (req, res, next) => {
-  const { id } = req.user;
-  const user = await User.findById(id)
-    .select(
-      "-password -otp -otpExpires -resetPasswordOtp -resetPasswordOTPExpires -passwordConfirm"
-    )
+  const { id, username } = req.params;
+
+  // Create a query object that will search by either ID or username
+  const query = id ? { _id: id } : { username };
+
+  const user = await User.findOne(query)
+    .select("-password -passwordConfirm -otp -otpExpiry -resetPasswordOTP -resetPasswordOTPExpires")
     .populate({
-      path: "post",
-      options: {
-        sort: { createdAt: -1 },
-      },
+      path: "posts",
+      select: "content image likes comments createdAt",
+      options: { sort: { createdAt: -1 } },
     })
     .populate({
-      path: "savedPost",
-      options: {
-        sort: { createdAt: -1 },
-      },
+      path: "followers",
+      select: "username name profilePicture",
+    })
+    .populate({
+      path: "following",
+      select: "username name profilePicture",
     });
 
   if (!user) {
@@ -26,7 +29,9 @@ export const getProfile = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: user,
+    data: {
+      user,
+    },
   });
 });
 

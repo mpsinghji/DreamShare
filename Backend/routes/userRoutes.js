@@ -26,7 +26,8 @@ router.post("/reset-password", resetPassword);
 router.post("/change-password", isAuthenticated, changePassword);
 
 // User Routes
-router.get("/profile/:id", getProfile);
+router.get("/profile/id/:id", getProfile);
+router.get("/profile/username/:username", getProfile);
 router.patch("/profile", isAuthenticated, upload.single("profilePicture"), editProfile);
 router.get("/suggested-users", isAuthenticated, suggestedUsers);
 router.post("/follow-unfollow/:id", isAuthenticated, followUnfollow);
