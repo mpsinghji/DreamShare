@@ -64,10 +64,10 @@ const Feed: React.FC = () => {
         </div>
       </div>
 
-      {/* Posts */}
+
       {posts.map((post) => (
         <div key={post.id} className="bg-white rounded-lg shadow-sm p-4">
-          {/* Post Header */}
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img
@@ -85,8 +85,7 @@ const Feed: React.FC = () => {
             </button>
           </div>
 
-          {/* Post Content */}
-          <p className="mt-4">{post.content}</p>
+           <p className="mt-4">{post.content}</p>
           {post.image && (
             <img
               src={post.image}
@@ -95,7 +94,7 @@ const Feed: React.FC = () => {
             />
           )}
 
-          {/* Post Actions */}
+
           <div className="flex justify-between mt-4 pt-4 border-t">
             <button className="flex items-center space-x-2 text-gray-600 hover:text-red-600">
               <Heart className="h-5 w-5" />

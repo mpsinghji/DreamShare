@@ -25,6 +25,39 @@ const Right: React.FC = () => {
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const user = useSelector((store: RootState) => store.auth.user);
+const toggleFollow = async (userId: string, isCurrentlyFollowing: boolean) => {
+  try {
+    // Optimistic UI update
+    setSuggestions((prev) =>
+      prev.map((user) =>
+        user._id === userId
+          ? { ...user, isFollowing: !isCurrentlyFollowing }
+          : user
+      )
+    );
+
+    const url = `${BASE_API_URL}/users/${
+      isCurrentlyFollowing ? "unfollow" : "follow"
+    }/${userId}`;
+    await axios.post(url, {}, { withCredentials: true });
+
+    toast.success(
+      isCurrentlyFollowing ? "Unfollowed successfully" : "Followed successfully"
+    );
+  } catch (error: any) {
+    // Revert optimistic update in case of error
+    setSuggestions((prev) =>
+      prev.map((user) =>
+        user._id === userId
+          ? { ...user, isFollowing: isCurrentlyFollowing }
+          : user
+      )
+    );
+    toast.error(
+      error.response?.data?.message || "Failed to update follow status"
+    );
+  }
+};
 
   const trends: Trend[] = [
     {
@@ -135,7 +168,10 @@ const Right: React.FC = () => {
               <div key={user._id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <img
-                    src={user.profilePicture || "https://avatar.iran.liara.run/public"}
+                    src={
+                      user.profilePicture ||
+                      "https://avatar.iran.liara.run/public"
+                    }
                     alt={user.username}
                     className="w-10 h-10 rounded-full"
                   />
@@ -145,24 +181,22 @@ const Right: React.FC = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() =>
-                    user.isFollowing
-                      ? handleUnfollow(user._id)
-                      : handleFollow(user._id)
-                  }
+                  onClick={() => toggleFollow(user._id, user.isFollowing)}
                   disabled={isLoading}
-                  className={`rounded-full px-4 py-1 text-sm ${
+                  className={`rounded-full px-4 py-1 text-sm transition-colors ${
                     user.isFollowing
                       ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
                       : "bg-black text-white hover:bg-gray-800"
-                  } transition-colors`}
+                  }`}
                 >
                   {user.isFollowing ? "Following" : "Follow"}
                 </button>
               </div>
             ))
           ) : (
-            <p className="text-gray-500 text-center">No suggestions available</p>
+            <p className="text-gray-500 text-center">
+              No suggestions available
+            </p>
           )}
         </div>
       </div>
