@@ -27,7 +27,7 @@ export const createPost = catchAsync(async (req, res, next) => {
   const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString(
     "base64"
   )}`;
-  const cloudResponse = await uploadToCloudinary(fileUri);
+  const cloudResponse = await uploadToCloudinary(fileUri, "post");
 
   let post = await Post.create({
     caption,

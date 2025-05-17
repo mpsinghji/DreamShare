@@ -3,6 +3,7 @@ import User from "../models/userModel.js";
 import AppError from "../utils/appError.js";
 import getDataUri from "../utils/dataUri.js";
 import uploadToCloudinary from "../utils/cloudinary.js";
+import fs from "fs";
 
 export const getProfile = catchAsync(async (req, res, next) => {
   const { id, username } = req.params;
@@ -48,8 +49,16 @@ export const editProfile = catchAsync(async (req, res, next) => {
 
   let cloudResponse;
   if (ProfilePicture) {
-    const fileUri = getDataUri(ProfilePicture);
-    cloudResponse = await uploadToCloudinary(fileUri.content);
+    try {
+      // Convert buffer to base64
+      const fileUri = getDataUri(ProfilePicture);
+      
+      // Upload to Cloudinary with specific folder
+      cloudResponse = await uploadToCloudinary(fileUri.content, "profile");
+    } catch (uploadError) {
+      console.error("Profile picture upload error:", uploadError);
+      return next(new AppError("Failed to upload profile picture", 500));
+    }
   }
 
   const user = await User.findById(userId).select("-password -passwordConfirm");
@@ -58,7 +67,7 @@ export const editProfile = catchAsync(async (req, res, next) => {
   }
 
   if (trimmedBio !== undefined) user.bio = trimmedBio;
-  if (ProfilePicture) user.profilePicture = cloudResponse?.url;
+  if (ProfilePicture) user.profilePicture = cloudResponse?.secure_url;
   
   // Save without validation for passwordConfirm
   await user.save({ validateBeforeSave: false });
