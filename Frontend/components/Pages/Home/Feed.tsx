@@ -7,6 +7,8 @@ import {
   Share2,
   MoreHorizontal,
 } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface Post {
   _id: string;
@@ -28,6 +30,7 @@ const Feed: React.FC = () => {
   const [caption, setCaption] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const authUser = useSelector((state: RootState) => state.auth.user);
 
   const fetchPosts = async () => {
     try {
@@ -93,9 +96,13 @@ const Feed: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm p-4">
         <div className="flex items-center space-x-4">
           <img
-            src="https://avatar.iran.liara.run/public/10"
+            src={authUser?.profilePicture || `https://avatar.iran.liara.run/public/boy?username=${authUser?.username}`}
             alt="Profile"
             className="w-10 h-10 rounded-full"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = `https://avatar.iran.liara.run/public/boy?username=${authUser?.username}`;
+            }}
           />
           <input
             type="text"
@@ -132,9 +139,13 @@ const Feed: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img
-                src={post.user?.profilePicture || "/default-avatar.png"}
+                src={post.user?.profilePicture || `https://avatar.iran.liara.run/public/boy?username=${post.user?.username}`}
                 alt={post.user?.username}
                 className="w-10 h-10 rounded-full"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://avatar.iran.liara.run/public/boy?username=${post.user?.username}`;
+                }}
               />
               <div>
                 <h3 className="font-semibold">{post.user?.username}</h3>
