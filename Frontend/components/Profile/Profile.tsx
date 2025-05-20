@@ -9,6 +9,7 @@ import { BASE_API_URL } from "@/server";
 import { handleAuthRequest } from "../utils/apiRequest";
 import { RootState } from "@/store/store";
 import Image from "next/image";
+import EditProfileModal from "./EditProfileModal";
 
 interface Post {
   _id: string;
@@ -45,7 +46,7 @@ const Profile = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [activeTab, setActiveTab] = useState<'posts' | 'saved'>('posts');
   const authUser = useSelector((state: RootState) => state.auth.user);
-
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   useEffect(() => {
     fetchUserProfile();
     fetchUserPosts();
@@ -124,7 +125,7 @@ const Profile = () => {
               {isOwnProfile ? (
                 <button className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg transition-colors">
                   <FaEdit />
-                  <span>Edit Profile</span>
+                  <span onClick={() => setIsEditProfileModalOpen(true)}>Edit Profile</span>
                 </button>
               ) : (
                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
@@ -229,7 +230,16 @@ const Profile = () => {
           <p className="text-gray-500 text-lg">No posts yet</p>
         </div>
       )}
-    </div>
+      <EditProfileModal
+      isOpen={isEditProfileModalOpen}
+      onClose={() => setIsEditProfileModalOpen(false)}
+      user={user}
+      onProfileUpdate={() => {
+        fetchUserProfile();
+        setIsEditProfileModalOpen(false);
+      }}
+    />
+    </div>    
   );
 };
 
