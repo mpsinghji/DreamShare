@@ -54,14 +54,23 @@ const Feed: React.FC = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImageFile(e.target.files[0]);
+      console.log("Selected file:", e.target.files[0]); // Add this
     }
   };
+  
 
   const handlePost = async () => {
-    if (!caption || !imageFile) return alert("Add caption and image");
+    console.log("Post button clicked");
+    if (!caption || !imageFile) {
+      alert("Add caption and image");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("caption", caption);
     formData.append("image", imageFile);
+    console.log("FormData prepared:", formData);
+    console.log("Token from localStorage:", localStorage.getItem("token"));
 
     try {
       setLoading(true);
@@ -72,14 +81,18 @@ const Feed: React.FC = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: formData,
+          body: formData, // Do NOT set Content-Type manually
         }
       );
+
       const data = await res.json();
+      console.log("Response from server:", data);
+      console.log(caption);
+
       if (res.ok) {
         setCaption("");
         setImageFile(null);
-        fetchPosts(); // Refresh posts
+        fetchPosts();
       } else {
         alert(data.message || "Failed to create post");
       }
@@ -89,6 +102,7 @@ const Feed: React.FC = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="space-y-4">

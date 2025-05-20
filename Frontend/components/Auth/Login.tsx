@@ -45,6 +45,8 @@ const Login = () => {
     const result = await handleAuthRequest(loginReq, setIsLoading);
 
     if (result) {
+      localStorage.setItem("token", result.data.token);
+
       dispatch(setAuthUser(result.data.data.user));
       toast.success(result.data.message);
       router.push("/");
