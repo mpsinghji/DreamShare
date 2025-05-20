@@ -81,17 +81,30 @@ export const editProfile = catchAsync(async (req, res, next) => {
 
 export const suggestedUsers = catchAsync(async (req, res, next) => {
   const loginUserId = req.user.id;
-  const users = await User.find({
-    _id: { $ne: loginUserId },
-  }).select(
+
+  // Get the current logged-in user's following list
+  const loginUser = await User.findById(loginUserId).select("following");
+
+  // Get all users except the current user
+  const users = await User.find({ _id: { $ne: loginUserId } }).select(
     "-password -otp -otpExpires -resetPasswordOtp -resetPasswordOTPExpires -passwordConfirm"
   );
 
+  // Add isFollowing flag to each user
+  const usersWithFollowStatus = users.map((user) => {
+    const isFollowing = loginUser.following.includes(user._id);
+    return {
+      ...user.toObject(),
+      isFollowing,
+    };
+  });
+
   res.status(200).json({
     status: "success",
-    data: users,
+    data: usersWithFollowStatus,
   });
 });
+
 
 export const followUnfollow = catchAsync(async (req, res, next) => {
     const loginUserId = req.user.id;
@@ -144,3 +157,26 @@ export const getMe = catchAsync(async (req, res, next) => {
         }
     });
 });
+
+
+export const searchUsers = async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ message: "Query parameter is required" });
+  }
+
+  try {
+    const users = await User.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { username: { $regex: query, $options: "i" } },
+        { email: { $regex: query, $options: "i" } },
+      ],
+    }).select("name username email profilePicture"); 
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Search error:", error.message);
+    res.status(500).json({ message: "Server error during user search" });
+  }
+};
