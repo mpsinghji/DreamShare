@@ -29,6 +29,7 @@ const Feed: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [caption, setCaption] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const authUser = useSelector((state: RootState) => state.auth.user);
 
@@ -51,13 +52,35 @@ const Feed: React.FC = () => {
     fetchPosts();
   }, []);
 
+  // Add this useEffect to monitor state changes
+  useEffect(() => {
+    console.log("Image Preview State:", imagePreview);
+    console.log("Image File State:", imageFile);
+  }, [imagePreview, imageFile]);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
-      console.log("Selected file:", e.target.files[0]); // Add this
+      const file = e.target.files[0];
+      console.log("File selected:", file);
+      
+      // Create preview URL first
+      const previewUrl = URL.createObjectURL(file);
+      console.log("Preview URL created:", previewUrl);
+      
+      // Update states
+      setImagePreview(previewUrl);
+      setImageFile(file);
     }
   };
   
+  useEffect(() => {
+    return () => {
+      // Cleanup preview URL when component unmounts
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const handlePost = async () => {
     console.log("Post button clicked");
@@ -81,7 +104,7 @@ const Feed: React.FC = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: formData, // Do NOT set Content-Type manually
+          body: formData,
         }
       );
 
@@ -92,6 +115,7 @@ const Feed: React.FC = () => {
       if (res.ok) {
         setCaption("");
         setImageFile(null);
+        setImagePreview(null); // Clear preview after successful post
         fetchPosts();
       } else {
         alert(data.message || "Failed to create post");
@@ -126,6 +150,37 @@ const Feed: React.FC = () => {
             className="flex-1 bg-gray-100 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+        
+        {/* Image Preview */}
+        {imagePreview && (
+          <div className="mt-4 relative border rounded-lg overflow-hidden">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="max-h-96 w-full object-contain"
+              onError={(e) => {
+                console.error("Error loading preview image:", e);
+                const target = e.target as HTMLImageElement;
+                target.src = "";
+              }}
+            />
+            <button
+              onClick={() => {
+                if (imagePreview) {
+                  URL.revokeObjectURL(imagePreview);
+                }
+                setImagePreview(null);
+                setImageFile(null);
+              }}
+              className="absolute top-2 right-2 bg-gray-800 bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-75"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mt-4">
           <label className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 cursor-pointer">
             <Image className="h-5 w-5" />
