@@ -55,24 +55,13 @@ const Feed: React.FC = () => {
       const data = await res.json();
       const posts = data.data.posts;
 
-      if (posts.length > 1) {
-        // Step 1: Sort by createdAt descending (newest first)
-        const sortedPosts = [...posts].sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+      // Sort all posts by createdAt in descending order (latest first)
+      const sortedPosts = posts.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
 
-        // Step 2: Extract the newest post
-        const [latestPost, ...otherPosts] = sortedPosts;
-
-        // Step 3: Shuffle the rest
-        const shuffledPosts = otherPosts.sort(() => Math.random() - 0.5);
-
-        // Step 4: Combine and update state
-        setPosts([latestPost, ...shuffledPosts]);
-      } else {
-        setPosts(posts);
-      }
+      setPosts(sortedPosts);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -305,7 +294,7 @@ const Feed: React.FC = () => {
               </div>
             </div>
             <button className="text-gray-500 hover:text-gray-700">
-              <MoreHorizontal className="h-5 w-5" />
+              {/* <MoreHorizontal className="h-5 w-5" /> */}
             </button>
           </div>
 
@@ -318,7 +307,7 @@ const Feed: React.FC = () => {
             />
           )}
 
-          <div className="flex justify-between mt-4 pt-4 border-t">
+          <div className="flex  mt-4 pt-4 border-t">
             <button 
               onClick={() => handleLike(post._id)}
               className="flex items-center space-x-2 text-gray-600 hover:text-red-600"
@@ -332,12 +321,12 @@ const Feed: React.FC = () => {
               onClick={() => setSelectedPost(post)}
               className="flex items-center space-x-2 text-gray-600 hover:text-blue-600"
             >
-              <MessageCircle className="h-5 w-5" />
+              <MessageCircle className="h-5 w-5 ml-4" />
               <span>{post.comments.length || 0}</span>
             </button>
             <button className="flex items-center space-x-2 text-gray-600 hover:text-green-600">
-              <Share2 className="h-5 w-5" />
-              <span>Share</span>
+              {/* <Share2 className="h-5  w-5" /> */}
+              {/* <span>Share</span> */}
             </button>
           </div>
         </div>
