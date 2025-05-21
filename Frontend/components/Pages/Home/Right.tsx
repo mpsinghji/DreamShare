@@ -151,7 +151,7 @@ const Right: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sticky top-0 h-screen ml-0 pl-1 pt-10">
       {/* Search Bar Trigger */}
       <div className="relative">
         <button

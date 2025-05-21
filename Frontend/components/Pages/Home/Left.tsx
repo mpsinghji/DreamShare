@@ -40,7 +40,7 @@ const Left: React.FC = () => {
 
   return (
     <>
-      <div className={`bg-white rounded-lg shadow-sm p-4 sticky top-0 h-screen ml-0 pl-1 ${showLogoutConfirm ? 'blur-sm' : ''}`}>
+      <div className={`bg-white rounded-lg shadow-sm p-4 sticky top-0 h-screen ml-0 pl-1 pt-10 ${showLogoutConfirm ? 'blur-sm' : ''}`}>
         <div className="flex flex-col space-y-4">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 mb-6">
