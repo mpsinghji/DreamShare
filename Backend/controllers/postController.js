@@ -64,7 +64,7 @@ export const getPosts = catchAsync(async (req, res, next) => {
     })
     .populate({
       path: "comments",
-      select: "text user",
+      select: "text user createdAt",
       populate: {
         path: "user",
         select: "username profilePicture",
