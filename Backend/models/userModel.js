@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const userSchema=new mongoose.Schema({
     name: {
@@ -97,6 +98,7 @@ const userSchema=new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    passwordChangedAt: Date,
 }, {timestamps: true});
 
 userSchema.pre("save", async function(next){
@@ -108,6 +110,23 @@ userSchema.pre("save", async function(next){
 
 userSchema.methods.correctPassword=async function(userPassword,databasePassword){
     return await bcrypt.compare(userPassword,databasePassword);
+};
+
+userSchema.methods.generateAuthToken = function () {
+    return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+    if (this.passwordChangedAt) {
+        const changedTimestamp = parseInt(
+            this.passwordChangedAt.getTime() / 1000,
+            10
+        );
+        return JWTTimestamp < changedTimestamp;
+    }
+    return false;
 };
 
 const User=mongoose.model("User",userSchema);

@@ -5,6 +5,7 @@ import AppError from "../utils/appError.js";
 import sharp from "sharp";
 import uploadToCloudinary from "../utils/cloudinary.js";
 import Comment from "../models/commentModel.js";
+import { createNotification } from "./notificationController.js";
 
 export const createPost = catchAsync(async (req, res, next) => {
   const { caption } = req.body;
@@ -227,6 +228,17 @@ export const addComment = catchAsync(async (req, res, next) => {
         path: "user",
         select: "username profilePicture",
     });
+
+    // Create notification for comment
+    if (post.user.toString() !== userId.toString()) {
+      await createNotification(
+        post.user,
+        userId,
+        "comment",
+        post._id,
+        `${req.user.username} commented on your post`
+      );
+    }
 
     return res.status(201).json({
         status: "success",

@@ -4,6 +4,7 @@ import AppError from "../utils/appError.js";
 import getDataUri from "../utils/dataUri.js";
 import uploadToCloudinary from "../utils/cloudinary.js";
 import fs from "fs";
+import { createNotification } from "./notificationController.js";
 
 export const getProfile = catchAsync(async (req, res, next) => {
   const { id, username } = req.params;
@@ -105,7 +106,6 @@ export const suggestedUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-
 export const followUnfollow = catchAsync(async (req, res, next) => {
     const loginUserId = req.user.id;
     const targetUserId = req.params.id;
@@ -114,6 +114,7 @@ export const followUnfollow = catchAsync(async (req, res, next) => {
     }
 
     const targetUser = await User.findById(targetUserId);
+    const loginUser = await User.findById(loginUserId).select("username");
 
     if(!targetUser){
         return next(new AppError("User not found", 404));
@@ -131,6 +132,21 @@ export const followUnfollow = catchAsync(async (req, res, next) => {
             User.updateOne({_id: loginUserId}, {$addToSet: {following: targetUserId}}),
             User.updateOne({_id: targetUserId}, {$addToSet: {followers: loginUserId}})
         ]);
+        
+        // Create notification for follow with error handling
+        try {
+            const notification = await createNotification(
+                targetUserId,
+                loginUserId,
+                "follow",
+                null,
+                `${loginUser.username} started following you`
+            );
+            console.log("Follow notification created:", notification);
+        } catch (error) {
+            console.error("Error creating follow notification:", error);
+            // Don't throw error here to prevent breaking the follow functionality
+        }
     }
 
     const updatedLoggedInUser = await User.findById(loginUserId).select("-password");
@@ -157,7 +173,6 @@ export const getMe = catchAsync(async (req, res, next) => {
         }
     });
 });
-
 
 export const searchUsers = async (req, res) => {
   const { query } = req.query;
