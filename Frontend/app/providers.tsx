@@ -2,14 +2,17 @@
 
 import { ReactNode } from "react";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import { Toaster } from "sonner";
-import store from "@/store/store";
+import store, { persistor } from "@/store/store";
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
     <Provider store={store}>
-      {children}
-      <Toaster />
+      <PersistGate loading={null} persistor={persistor}>
+        {children}
+        <Toaster />
+      </PersistGate>
     </Provider>
   );
 }
