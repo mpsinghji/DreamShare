@@ -204,18 +204,6 @@ const Profile = () => {
         >
           Posts
         </button>
-        {isOwnProfile && (
-          <button
-            className={`px-6 py-3 font-semibold ${
-              activeTab === 'saved'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-            onClick={() => setActiveTab('saved')}
-          >
-            Saved
-          </button>
-        )}
       </div>
 
       {/* Posts Grid */}
@@ -260,9 +248,6 @@ const Profile = () => {
                     <span>{post.comments?.length || 0}</span>
                   </button>
                 </div>
-                <button className="hover:text-blue-500 transition-colors">
-                  <CiBookmark size={20} />
-                </button>
               </div>
             </div>
           </div>
@@ -281,43 +266,48 @@ const Profile = () => {
           {/* Modal container with glass effect */}
           <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl w-11/12 max-w-5xl h-[85vh] flex shadow-2xl border border-white/20">
             {/* Left side - Image with gradient overlay */}
-            <div className="w-1/2 h-full relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
-              <img
-                src={selectedPost.image?.url}
-                alt="Post"
-                className="w-full h-full object-contain rounded-l-2xl"
-              />
+            <div className="w-1/2 h-full relative flex flex-col">
+              <div className="flex-1 relative">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
+                <img
+                  src={selectedPost.image?.url}
+                  alt="Post"
+                  className="w-full h-full object-contain rounded-l-2xl"
+                />
+              </div>
+              <div className="p-4 bg-white/80 backdrop-blur-sm border-t">
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="relative w-8 h-8">
+                    {/* <Image
+                      src={selectedPost.user.profilePicture || `https://avatar.iran.liara.run/public/boy?username=${selectedPost.user.username}`}
+                      alt={selectedPost.user.username}
+                      fill
+                      className="rounded-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://avatar.iran.liara.run/public/boy?username=${selectedPost.user.username}`;
+                      }}
+                    /> */}
+                  </div>
+                  <span className="font-semibold text-gray-800">{selectedPost.user.username}</span>
+                </div>
+                <p className="text-gray-700">{selectedPost.caption}</p>
+              </div>
             </div>
             
             {/* Right side - Comments with glass effect */}
             <div className="w-1/2 h-full flex flex-col bg-white/80 backdrop-blur-sm rounded-r-2xl">
               {/* Header with glass effect */}
-              <div className="p-4 border-b border-gray-200/50 flex items-center justify-between bg-white/50 backdrop-blur-sm">
-                <div className="flex items-center space-x-3">
-                  <div className="relative w-10 h-10">
-                    <Image
-                      src={selectedPost.user.profilePicture || `https://avatar.iran.liara.run/public/boy?username=${selectedPost.user.username}`}
-                      alt={selectedPost.user.username}
-                      fill
-                      className="rounded-full object-cover ring-2 ring-white/50"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = `https://avatar.iran.liara.run/public/boy?username=${selectedPost.user.username}`;
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-800">{selectedPost.user.username}</span>
-                    <p className="text-sm text-gray-500">{selectedPost.caption}</p>
-                  </div>
+              <div className="p-4 border-b border-gray-200/50 bg-white/50 backdrop-blur-sm">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-gray-800">Comments</h2>
+                  <button 
+                    onClick={() => setSelectedPost(null)}
+                    className="text-gray-500 hover:text-gray-700 transition-colors p-2 hover:bg-gray-100 rounded-full"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
-                <button 
-                  onClick={() => setSelectedPost(null)}
-                  className="text-gray-500 hover:text-gray-700 transition-colors p-2 hover:bg-gray-100 rounded-full"
-                >
-                  <X className="h-5 w-5" />
-                </button>
               </div>
 
               {/* Comments list with custom scrollbar */}
@@ -347,26 +337,28 @@ const Profile = () => {
                         <div className="flex-1">
                           <div className="bg-gray-50/80 backdrop-blur-sm rounded-2xl p-3 shadow-sm">
                             <div className="flex items-center justify-between">
-                              <span className="font-semibold text-sm text-gray-800">{comment.user.username}</span>
-                              <span className="text-xs text-gray-400">
-                                {comment.createdAt ? new Date(comment.createdAt).toLocaleString('en-US', {
-                                  year: 'numeric',
-                                  month: 'numeric',
-                                  day: 'numeric',
-                                  hour: 'numeric',
-                                  minute: '2-digit',
-                                  second: '2-digit',
-                                  hour12: true
-                                }) : new Date(selectedPost.createdAt).toLocaleString('en-US', {
-                                  year: 'numeric',
-                                  month: 'numeric',
-                                  day: 'numeric',
-                                  hour: 'numeric',
-                                  minute: '2-digit',
-                                  second: '2-digit',
-                                  hour12: true
-                                })}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-sm text-gray-800">{comment.user.username}</span>
+                                <span className="text-xs text-gray-400">
+                                  {comment.createdAt ? new Date(comment.createdAt).toLocaleString('en-US', {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: 'numeric',
+                                    minute: '2-digit',
+                                    second: '2-digit',
+                                    hour12: true
+                                  }) : new Date(selectedPost.createdAt).toLocaleString('en-US', {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: 'numeric',
+                                    minute: '2-digit',
+                                    second: '2-digit',
+                                    hour12: true
+                                  })}
+                                </span>
+                              </div>
                             </div>
                             <p className="text-sm text-gray-700 mt-1">{comment.text}</p>
                           </div>
