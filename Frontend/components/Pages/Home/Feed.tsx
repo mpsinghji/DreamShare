@@ -21,8 +21,8 @@ interface Post {
     profilePicture: string;
   };
   createdAt: string;
-  likes: number;
-  comments: number;
+  likes: string[];
+  comments: string[];
 }
 
 const Feed: React.FC = () => {
@@ -240,11 +240,11 @@ const Feed: React.FC = () => {
           <div className="flex justify-between mt-4 pt-4 border-t">
             <button className="flex items-center space-x-2 text-gray-600 hover:text-red-600">
               <Heart className="h-5 w-5" />
-              <span>{post.likes || 0}</span>
+              <span>{post.likes.length || 0}</span>
             </button>
             <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
               <MessageCircle className="h-5 w-5" />
-              <span>{post.comments || 0}</span>
+              <span>{post.comments.length || 0}</span>
             </button>
             <button className="flex items-center space-x-2 text-gray-600 hover:text-green-600">
               <Share2 className="h-5 w-5" />
