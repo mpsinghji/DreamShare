@@ -91,7 +91,7 @@ const Profile = () => {
 
   const handleLike = async (postId: string) => {
     try {
-      await axios.post(`${BASE_API_URL}/posts/like/${postId}`, {}, {
+      await axios.post(`${BASE_API_URL}/posts/like-dislike/${postId}`, {}, {
         withCredentials: true,
       });
       fetchUserPosts(); // Refresh to get updated likes
