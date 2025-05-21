@@ -8,6 +8,7 @@ import { RootState } from "@/store/store";
 import { toast } from "sonner";
 import Image from "next/image";
 import debounce from "lodash/debounce";
+import { useRouter } from "next/navigation";
 
 interface UserSuggestion {
   _id: string;
@@ -24,6 +25,7 @@ interface Trend {
 }
 
 const Right: React.FC = () => {
+  const router = useRouter();
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -150,6 +152,13 @@ const Right: React.FC = () => {
     }
   };
 
+  const handleUserClick = (username: string) => {
+    setShowSearchModal(false);
+    setQuery("");
+    setResults([]);
+    router.push(`/profile/${username}`);
+  };
+
   return (
     <div className="space-y-6 sticky top-0 h-screen ml-0 pl-1 pt-10">
       {/* Search Bar Trigger */}
@@ -209,6 +218,7 @@ const Right: React.FC = () => {
                     <div
                       key={user._id}
                       className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => handleUserClick(user.username)}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="relative w-12 h-12">

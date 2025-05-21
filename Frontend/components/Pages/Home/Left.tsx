@@ -93,7 +93,7 @@ const Left: React.FC = () => {
           </Link> */}
 
           <Link
-            href={`/profile/${user?._id}`}
+            href={`/profile/${user?.username}`}
             className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100"
           >
             <User className="h-6 w-6" />

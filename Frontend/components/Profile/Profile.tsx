@@ -11,6 +11,7 @@ import { RootState } from "@/store/store";
 import Image from "next/image";
 import EditProfileModal from "./EditProfileModal";
 import { X, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 
 interface Post {
   _id: string;
@@ -50,7 +51,11 @@ interface User {
   following: string[];
 }
 
-const Profile = () => {
+interface ProfileProps {
+  username?: string;
+}
+
+const Profile: React.FC<ProfileProps> = ({ username }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -59,33 +64,48 @@ const Profile = () => {
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [newComment, setNewComment] = useState('');
+
   useEffect(() => {
     fetchUserProfile();
-    fetchUserPosts();
-  }, []);
+  }, [username]);
 
   const fetchUserProfile = async () => {
     const getProfileReq = async () => {
-      return await axios.get(`${BASE_API_URL}/users/me`, {
-        withCredentials: true,
-      });
+      if (username && username !== authUser?.username) {
+        // For other users' profiles
+        return await axios.get(`${BASE_API_URL}/users/profile/username/${username}`, {
+          withCredentials: true,
+        });
+      } else {
+        // For own profile
+        return await axios.get(`${BASE_API_URL}/users/me`, {
+          withCredentials: true,
+        });
+      }
     };
 
-    const result = await handleAuthRequest(getProfileReq, setIsLoading);
-    if (result) {
-      setUser(result.data.data.user);
+    try {
+      const result = await handleAuthRequest(getProfileReq, setIsLoading);
+      if (result) {
+        setUser(result.data.data.user);
+        fetchUserPosts(result.data.data.user._id);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      toast.error("Failed to load profile");
     }
   };
 
-  const fetchUserPosts = async () => {
+  const fetchUserPosts = async (userId: string) => {
     try {
-      const response = await axios.get(`${BASE_API_URL}/posts/user-posts/${authUser?._id}`, {
+      const response = await axios.get(`${BASE_API_URL}/posts/user-posts/${userId}`, {
         withCredentials: true,
       });
       setPosts(response.data.data.posts || []);
     } catch (error) {
       console.error("Error fetching posts:", error);
       setPosts([]);
+      toast.error("Failed to load posts");
     }
   };
 
@@ -94,7 +114,7 @@ const Profile = () => {
       await axios.post(`${BASE_API_URL}/posts/like-dislike/${postId}`, {}, {
         withCredentials: true,
       });
-      fetchUserPosts(); // Refresh to get updated likes
+      fetchUserPosts(user?._id || ''); // Refresh to get updated likes
     } catch (error) {
       console.error("Error liking post:", error);
     }
@@ -119,7 +139,7 @@ const Profile = () => {
         }
       }
 
-      fetchUserPosts(); // Refresh to get updated comments
+      fetchUserPosts(user?._id || ''); // Refresh to get updated comments
       setNewComment('');
     } catch (error) {
       console.error("Error commenting on post:", error);

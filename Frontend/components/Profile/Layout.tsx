@@ -3,7 +3,11 @@ import React from "react";
 import Left from "../Pages/Home/Left";
 import Profile from "./Profile";
 
-const Layout = () => {
+interface LayoutProps {
+  username?: string;
+}
+
+const Layout: React.FC<LayoutProps> = ({ username }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,7 +19,7 @@ const Layout = () => {
 
           {/* Main Feed */}
           <div className="col-span-12 md:col-span-10 lg:col-span-10">
-            <Profile />
+            <Profile username={username} />
           </div>
         </div>
       </div>
