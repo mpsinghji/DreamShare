@@ -82,7 +82,7 @@ export const getPosts = catchAsync(async (req, res, next) => {
 });
 
 export const getUserPosts = catchAsync(async (req, res, next) => {
-  const userId = req.params.userId;
+  const userId = req.params.id;
   const posts = await Post.find({ user: userId })
     .populate({
       path: "comments",

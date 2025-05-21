@@ -67,7 +67,7 @@ const Profile = () => {
 
   const fetchUserPosts = async () => {
     try {
-      const response = await axios.get(`${BASE_API_URL}/posts/all`, {
+      const response = await axios.get(`${BASE_API_URL}/posts/user-posts/${authUser?._id}`, {
         withCredentials: true,
       });
       setPosts(response.data.data.posts || []);
