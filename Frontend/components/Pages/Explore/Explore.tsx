@@ -66,10 +66,25 @@ const Explore = () => {
 
   const handleLike = async (postId: string) => {
     try {
-      await axios.post(`${BASE_API_URL}/posts/like/${postId}`, {}, {
+      const response = await axios.post(`${BASE_API_URL}/posts/like-dislike/${postId}`, {}, {
         withCredentials: true,
       });
-      fetchPosts();
+      
+      if (response.data.status === "success") {
+        // If we're in the modal view, update the selected post
+        if (selectedPost && selectedPost._id === postId) {
+          const updatedPost = await axios.get(`${BASE_API_URL}/posts/all`, {
+            withCredentials: true,
+          }).then(res => res.data.data.posts.find((p: Post) => p._id === postId));
+          
+          if (updatedPost) {
+            setSelectedPost(updatedPost);
+          }
+        }
+        
+        // Refresh all posts
+        fetchPosts();
+      }
     } catch (error) {
       console.error("Error liking post:", error);
     }
@@ -131,18 +146,18 @@ const Explore = () => {
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 priority={false}
               />
-              {/* <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 rounded-lg flex items-center justify-center backdrop-blur-sm">
+              <div className="absolute inset-0 bg-black/0 backdrop-blur-0 group-hover:bg-black/40 group-hover:backdrop-blur-[2px] transition-all duration-300 rounded-lg flex items-center justify-center">
                 <div className="flex gap-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="flex items-center gap-1">
-                    <CiHeart size={20} />
+                    <CiHeart size={24} />
                     <span>{post.likes?.length || 0}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <FaComment size={16} />
+                    <FaComment size={20} />
                     <span>{post.comments?.length || 0}</span>
                   </div>
                 </div>
-              </div> */}
+              </div>
             </div>
           )
         ))}
@@ -169,6 +184,22 @@ const Explore = () => {
                   fill
                   className="object-contain rounded-l-2xl"
                 />
+              </div>
+              {/* Like and Comment buttons */}
+              <div className="absolute bottom-4 left-4 flex gap-4 z-20">
+                <button
+                  onClick={() => handleLike(selectedPost._id)}
+                  className={`flex items-center gap-1 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors ${
+                    selectedPost.likes?.includes(authUser?._id || '') ? 'text-red-500' : 'text-gray-700'
+                  }`}
+                >
+                  <CiHeart size={24} />
+                  <span>{selectedPost.likes?.length || 0}</span>
+                </button>
+                <div className="flex items-center gap-1 p-2 rounded-full bg-white/80 backdrop-blur-sm text-gray-700">
+                  <FaComment size={20} />
+                  <span>{selectedPost.comments?.length || 0}</span>
+                </div>
               </div>
             </div>
             
