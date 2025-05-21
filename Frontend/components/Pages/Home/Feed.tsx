@@ -43,7 +43,7 @@ const Feed: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [newComment, setNewComment] = useState("");
   const authUser = useSelector((state: RootState) => state.auth.user);
-
+  
   const fetchPosts = async () => {
     try {
       const res = await fetch("http://localhost:8000/api/v1/posts/all", {
@@ -53,11 +53,32 @@ const Feed: React.FC = () => {
       });
 
       const data = await res.json();
-      setPosts(data.data.posts.reverse()); // Correct property access
+      const posts = data.data.posts;
+
+      if (posts.length > 1) {
+        // Step 1: Sort by createdAt descending (newest first)
+        const sortedPosts = [...posts].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+
+        // Step 2: Extract the newest post
+        const [latestPost, ...otherPosts] = sortedPosts;
+
+        // Step 3: Shuffle the rest
+        const shuffledPosts = otherPosts.sort(() => Math.random() - 0.5);
+
+        // Step 4: Combine and update state
+        setPosts([latestPost, ...shuffledPosts]);
+      } else {
+        setPosts(posts);
+      }
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
   };
+  
+  
   
   useEffect(() => {
     fetchPosts();

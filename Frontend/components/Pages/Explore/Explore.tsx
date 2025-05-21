@@ -40,7 +40,10 @@ const Explore = () => {
         withCredentials: true,
       });
       if (response.data.status === "success") {
-        setPosts(response.data.data.posts);
+        const shuffledPosts = response.data.data.posts.sort(
+          () => Math.random() - 0.5
+        );
+        setPosts(shuffledPosts);
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
